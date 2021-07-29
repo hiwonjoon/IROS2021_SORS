@@ -1,0 +1,11 @@
+# Humanoid
+
+env_id = 'Humanoid-v3'
+gamma = 0.99
+
+ob_dim = 376
+ac_dim = 17
+ob_dim_plus_ac_dim = 393
+ac_dim_times_2 = 34
+Q_dim = 393 # ac_dim + ob_dim
+ac_scale = 0.4

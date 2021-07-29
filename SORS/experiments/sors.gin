@@ -1,0 +1,100 @@
+# Default Hyperparameters for SORS
+import SORS.scripts.sors
+import SORS.algo.sac
+import SORS.modules.replay_buffer
+import SORS.modules.reward
+import SORS.modules.preference
+
+##############
+# Off-policy RL Setting
+##############
+
+SORS.scripts.sors.run.env_id = %env_id
+SORS.scripts.sors.run.Algo = @algo.sac.SAC
+SORS.scripts.sors.run.Reward = @SORS.modules.reward.RewardV2Ensemble
+SORS.scripts.sors.run.PreferenceDataset = @SORS.modules.preference.PreferenceDatasetEnsemble
+
+SORS.scripts.sors.run.batch_size = 100
+SORS.scripts.sors.run.min_buffer_size = 2000
+SORS.scripts.sors.run.until = 1000000 # 3e5, 3e6
+
+SORS.scripts.sors.run.update_period = 50
+SORS.scripts.sors.run.update_num = 50
+SORS.scripts.sors.run.update_log_period = 100
+
+SORS.scripts.sors.run.r_update_period = 1000
+SORS.scripts.sors.run.r_update_num = 100
+SORS.scripts.sors.run.r_batch_size = 10
+SORS.scripts.sors.run.r_update_log_period = 100
+
+SORS.scripts.sors.run.save_period = 100000
+SORS.scripts.sors.run.run_period = 10000
+SORS.scripts.sors.run.eval_period = 100000
+SORS.scripts.sors.run.eval_env_id = %env_id
+SORS.scripts.sors.run.eval_policies = ['pi']
+
+SORS.modules.replay_buffer.ReplayBuffer.max_size = 1000000
+
+##############
+# SAC Setting
+##############
+SORS.algo.sac.prepare_update.gamma = %gamma
+SORS.algo.sac.prepare_update.entropy_reg_coeff = 0.2
+SORS.algo.sac.prepare_update.polyak_coeff = 0.995
+SORS.algo.sac.prepare_update.tune_entropy_reg_coeff = True
+SORS.algo.sac.prepare_update.target_entropy = None
+
+######################
+# Q Network Setting
+######################
+import SORS.modules.mlp
+import SORS.modules.value_function
+
+Q/SORS.modules.mlp.MLP.num_layers = 2
+Q/SORS.modules.mlp.MLP.in_dim = %Q_dim
+Q/SORS.modules.mlp.MLP.dim = 256
+Q/SORS.modules.mlp.MLP.out_dim = 1
+
+SORS.modules.value_function.ActionValue.Net = @Q/SORS.modules.mlp.MLP
+SORS.modules.value_function.ActionValue.build_target_net = True
+
+######################
+# Policy Network Setting
+######################
+import SORS.modules.stochastic_policy
+
+pi/SORS.modules.mlp.MLP.num_layers = 2
+pi/SORS.modules.mlp.MLP.in_dim = %ob_dim
+pi/SORS.modules.mlp.MLP.dim = 256
+pi/SORS.modules.mlp.MLP.out_dim = %ac_dim_times_2
+
+SORS.modules.stochastic_policy.StochasticPolicy.Net = @pi/SORS.modules.mlp.MLP
+SORS.modules.stochastic_policy.StochasticPolicy.scale = %ac_scale
+SORS.modules.stochastic_policy.prepare_update.learning_rate = 3e-4
+
+######################
+# Reward Learning Setting
+######################
+import SORS.modules.mlp
+
+num_ensembles = 4
+use_state_and_action = True
+
+SORS.modules.preference.PreferenceDatasetEnsemble.num_ensembles = %num_ensembles
+SORS.modules.preference.PreferenceDataset.use_state_and_action = %use_state_and_action
+SORS.modules.preference.PreferenceDataset.max_in_memory_num = 100
+SORS.modules.preference.PreferenceDataset.max_per_file_num = 10
+
+# Reward Network Setting
+Phi/SORS.modules.mlp.MLP.num_layers = 2
+Phi/SORS.modules.mlp.MLP.activation = 'tanh'
+Phi/SORS.modules.mlp.MLP.last_activation = 'tanh'
+Phi/SORS.modules.mlp.MLP.dim = 128
+Phi/SORS.modules.mlp.MLP.time_distributed = True
+
+SORS.modules.reward.RewardV2Ensemble.num_ensembles = %num_ensembles
+SORS.modules.reward.RewardV2.phi_dim = 4
+SORS.modules.reward.RewardV2.Phi = @Phi/SORS.modules.mlp.MLP
+SORS.modules.reward.RewardV2.use_state_and_action = %use_state_and_action
+SORS.modules.reward.RewardV2.use_bias = True
+SORS.modules.reward.RewardV2.w.normalize = True #normalize the weight vector

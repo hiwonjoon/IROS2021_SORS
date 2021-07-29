@@ -1,0 +1,11 @@
+# Ant
+
+env_id = 'Ant-v3'
+gamma = 0.99
+
+ob_dim = 111
+ac_dim = 8
+ob_dim_plus_ac_dim = 119
+ac_dim_times_2 = 16
+Q_dim = 119 # ac_dim + ob_dim
+ac_scale = 1.

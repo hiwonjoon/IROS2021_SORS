@@ -1,0 +1,11 @@
+# Swimmer
+
+env_id = 'Swimmer-v3'
+gamma = 0.99
+
+ob_dim = 8
+ac_dim = 2
+ob_dim_plus_ac_dim = 10
+ac_dim_times_2 = 4
+Q_dim = 10 # ac_dim + ob_dim
+ac_scale = 1.

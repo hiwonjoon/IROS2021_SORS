@@ -1,0 +1,66 @@
+# Default Hyperparameters for SAC
+import SORS.scripts.offpolicy_rl
+import SORS.algo.sac
+
+##############
+# Off-policy RL Setting
+##############
+import SORS.modules.replay_buffer
+
+SORS.scripts.offpolicy_rl.run.env_id = %env_id
+SORS.scripts.offpolicy_rl.run.Algo = @SORS.algo.sac.SAC
+
+SORS.scripts.offpolicy_rl.run.batch_size = 100
+SORS.scripts.offpolicy_rl.run.min_buffer_size = 2000
+SORS.scripts.offpolicy_rl.run.until = 1000000 # 3e5, 3e6
+SORS.scripts.offpolicy_rl.run.update_period = 50
+SORS.scripts.offpolicy_rl.run.update_num = 50
+SORS.scripts.offpolicy_rl.run.update_log_period = 100
+
+SORS.scripts.offpolicy_rl.run.save_period = 100000
+SORS.scripts.offpolicy_rl.run.run_period = 10000
+SORS.scripts.offpolicy_rl.run.eval_period = 100000
+SORS.scripts.offpolicy_rl.run.eval_env_id = %env_id
+SORS.scripts.offpolicy_rl.run.eval_policies = ['pi']
+
+SORS.modules.replay_buffer.ReplayBuffer.max_size= 1000000
+
+##############
+# SAC Setting
+##############
+SORS.algo.sac.prepare_update.gamma = %gamma
+SORS.algo.sac.prepare_update.entropy_reg_coeff = 0.2
+SORS.algo.sac.prepare_update.polyak_coeff = 0.995
+SORS.algo.sac.prepare_update.tune_entropy_reg_coeff = True
+SORS.algo.sac.prepare_update.target_entropy = None
+
+######################
+# Q Network Setting
+######################
+import SORS.modules.mlp
+import SORS.modules.value_function
+import SORS.modules.optimizer
+
+Q/SORS.modules.mlp.MLP.num_layers = 2
+Q/SORS.modules.mlp.MLP.in_dim = %Q_dim
+Q/SORS.modules.mlp.MLP.dim = 256
+Q/SORS.modules.mlp.MLP.out_dim = 1
+
+SORS.modules.value_function.ActionValue.Net = @Q/SORS.modules.mlp.MLP
+SORS.modules.value_function.ActionValue.build_target_net = True
+
+######################
+# Policy Network Setting
+######################
+import SORS.modules.stochastic_policy
+
+pi/SORS.modules.mlp.MLP.num_layers = 2
+pi/SORS.modules.mlp.MLP.in_dim = %ob_dim
+pi/SORS.modules.mlp.MLP.dim = 256
+pi/SORS.modules.mlp.MLP.out_dim = %ac_dim_times_2
+
+SORS.modules.stochastic_policy.StochasticPolicy.Net = @pi/SORS.modules.mlp.MLP
+SORS.modules.stochastic_policy.StochasticPolicy.scale = %ac_scale
+SORS.modules.stochastic_policy.prepare_update.learning_rate = 3e-4
+
+

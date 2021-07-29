@@ -1,0 +1,17 @@
+# Delayed Ant
+import SORS.envs
+
+include 'SORS/experiments/envs/ant.gin'
+test_env_id = 'Ant-v3'
+
+env_id = 'delayed-reward-v0'
+
+# Reward Delay Setting
+reward_freq = 20
+
+SORS.envs.delayed_rewards.DelayedRewardEnv.env_id = %test_env_id
+SORS.envs.delayed_rewards.DelayedRewardEnv.reward_freq = %reward_freq
+
+# Addtional Hyperparameters to run test for offpolicy_rl
+import SORS.scripts.offpolicy_rl
+SORS.scripts.offpolicy_rl.run.eval_env_id = %test_env_id

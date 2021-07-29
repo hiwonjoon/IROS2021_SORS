@@ -1,0 +1,11 @@
+# Hopper
+
+env_id = 'Hopper-v3'
+gamma = 0.99
+
+ob_dim = 11
+ac_dim = 3
+ob_dim_plus_ac_dim = 14
+ac_dim_times_2 = 6
+Q_dim = 14 # ac_dim + ob_dim
+ac_scale = 1.

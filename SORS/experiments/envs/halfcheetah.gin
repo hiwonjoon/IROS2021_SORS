@@ -1,0 +1,11 @@
+# HalfCheetah
+
+env_id = 'HalfCheetah-v3'
+gamma = 0.99
+
+ob_dim = 17
+ac_dim = 6
+ob_dim_plus_ac_dim = 23
+ac_dim_times_2 = 12
+Q_dim = 23 # ac_dim + ob_dim
+ac_scale = 1.
